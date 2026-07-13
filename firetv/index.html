@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BamoTV Fire TV Download</title>
+<style>
+  :root {
+    --bg: #000000;
+    --surface: rgba(255, 255, 255, .055);
+    --surface-strong: rgba(255, 255, 255, .1);
+    --hairline: rgba(255, 255, 255, .09);
+    --text: #f5f5f7;
+    --muted: #98989d;
+    --accent: #32ade6;
+    --warn: #ff9f0a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: radial-gradient(circle at 82% 8%, rgba(50, 173, 230, .08), transparent 40%), linear-gradient(180deg, #050505, #000 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: grid;
+    place-items: center;
+  }
+  main {
+    text-align: center;
+    padding: 24px;
+  }
+  .icon {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 20px;
+    border-radius: 18px;
+    background: var(--surface-strong);
+    font-size: 32px;
+    border: 1px solid var(--hairline);
+  }
+  .spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid rgba(255, 255, 255, .18);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  p { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
+  p.error { color: var(--warn); }
+  .button {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #04121a;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <div class="icon">📺</div>
+  <div class="spinner" id="spinner"></div>
+  <p id="status">Aktuelle Fire-TV-Version wird gesucht …</p>
+  <a class="button hidden" id="fallback" href="https://github.com/8bamo/bamotv-downloads/releases">Alle Releases ansehen</a>
+</main>
+
+<script>
+(function () {
+  var PREFIX = 'firetv-v';
+  var ASSET_NAME = 'BamoTV-FireTV.apk';
+
+  function parseVersion(text) {
+    var parts = text.split('.').map(function (n) { return parseInt(n, 10); });
+    return parts.some(isNaN) ? null : parts;
+  }
+
+  function compareVersions(a, b) {
+    var len = Math.max(a.length, b.length);
+    for (var i = 0; i < len; i++) {
+      var x = a[i] || 0, y = b[i] || 0;
+      if (x !== y) return x - y;
+    }
+    return 0;
+  }
+
+  function showFallback(message) {
+    document.getElementById('spinner').classList.add('hidden');
+    var status = document.getElementById('status');
+    status.textContent = message;
+    status.classList.add('error');
+    document.getElementById('fallback').classList.remove('hidden');
+  }
+
+  fetch('https://api.github.com/repos/8bamo/bamotv-downloads/releases')
+    .then(function (response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .then(function (releases) {
+      var best = null;
+      releases.forEach(function (release) {
+        if (release.tag_name.indexOf(PREFIX) !== 0) return;
+        var version = parseVersion(release.tag_name.slice(PREFIX.length));
+        if (!version) return;
+        if (!best || compareVersions(version, best.version) > 0) {
+          best = { version: version, release: release };
+        }
+      });
+      if (!best) { showFallback('Keine Fire-TV-Version gefunden.'); return; }
+      var asset = (best.release.assets || []).filter(function (a) { return a.name === ASSET_NAME; })[0];
+      if (!asset) { showFallback('Download-Datei nicht gefunden.'); return; }
+      document.getElementById('status').textContent = 'Weiterleitung zu Version ' + best.version.join('.') + ' …';
+      window.location.replace(asset.browser_download_url);
+    })
+    .catch(function () {
+      showFallback('Version konnte nicht ermittelt werden.');
+    });
+})();
+</script>
+</body>
+</html>
