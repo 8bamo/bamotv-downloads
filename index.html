@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BamoTV Downloads</title>
+<style>
+  :root {
+    --bg: #000000;
+    --surface: rgba(255, 255, 255, .055);
+    --surface-strong: rgba(255, 255, 255, .1);
+    --hairline: rgba(255, 255, 255, .09);
+    --text: #f5f5f7;
+    --muted: #98989d;
+    --accent: #32ade6;
+    --accent-strong: #7dd6ff;
+    --warn: #ff9f0a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: radial-gradient(circle at 82% 8%, rgba(50, 173, 230, .08), transparent 40%), linear-gradient(180deg, #050505, #000 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(32px, 6vw, 72px) 24px 64px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: clamp(32px, 5vw, 56px);
+  }
+  header h1 {
+    margin: 0;
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 700;
+    letter-spacing: -.03em;
+  }
+  header p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 17px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    border: 1px solid var(--hairline);
+    background: var(--surface);
+    -webkit-backdrop-filter: blur(40px) saturate(160%);
+    backdrop-filter: blur(40px) saturate(160%);
+    border-radius: 26px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .38);
+  }
+  .card .icon {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: var(--surface-strong);
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .card .version {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 20px;
+    min-height: 18px;
+  }
+  .card .version.error { color: var(--warn); }
+  .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #04121a;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+  }
+  .button[aria-disabled="true"] {
+    opacity: .5;
+    pointer-events: none;
+  }
+  .button.secondary {
+    background: var(--surface-strong);
+    color: var(--text);
+    margin-top: 10px;
+    font-size: 13px;
+    padding: 9px 16px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer a { color: var(--accent-strong); }
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, .25);
+    border-top-color: var(--text);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>BamoTV</h1>
+    <p>Native IPTV-Apps für Windows, macOS und Fire TV.</p>
+  </header>
+
+  <div class="cards" id="cards">
+    <article class="card" data-platform="windows">
+      <div class="icon">🪟</div>
+      <h2>Windows</h2>
+      <div class="version"><span class="spinner"></span></div>
+      <a class="button" aria-disabled="true" href="#">Wird geladen …</a>
+    </article>
+    <article class="card" data-platform="macos">
+      <div class="icon">🍎</div>
+      <h2>macOS</h2>
+      <div class="version"><span class="spinner"></span></div>
+      <a class="button" aria-disabled="true" href="#">Wird geladen …</a>
+    </article>
+    <article class="card" data-platform="firetv">
+      <div class="icon">📺</div>
+      <h2>Fire TV</h2>
+      <div class="version"><span class="spinner"></span></div>
+      <a class="button" aria-disabled="true" href="#">Wird geladen …</a>
+    </article>
+  </div>
+
+  <footer>
+    Alle Versionen: <a href="https://github.com/8bamo/bamotv-downloads/releases">github.com/8bamo/bamotv-downloads/releases</a>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var PLATFORMS = {
+    windows: { prefix: 'windows-v', asset: 'BamoTV-Windows-x64.zip', label: 'Für Windows herunterladen' },
+    macos:   { prefix: 'macos-v',   asset: 'BamoTV-macOS.zip',       label: 'Für macOS herunterladen' },
+    firetv:  { prefix: 'firetv-v',  asset: 'BamoTV-FireTV.apk',      label: 'Für Fire TV herunterladen' }
+  };
+
+  function parseVersion(text) {
+    var parts = text.split('.').map(function (n) { return parseInt(n, 10); });
+    return parts.some(isNaN) ? null : parts;
+  }
+
+  function compareVersions(a, b) {
+    var len = Math.max(a.length, b.length);
+    for (var i = 0; i < len; i++) {
+      var x = a[i] || 0, y = b[i] || 0;
+      if (x !== y) return x - y;
+    }
+    return 0;
+  }
+
+  function setCard(platform, version, url, isError) {
+    var card = document.querySelector('.card[data-platform="' + platform + '"]');
+    var versionEl = card.querySelector('.version');
+    var buttonEl = card.querySelector('.button');
+    if (isError) {
+      versionEl.textContent = 'Nicht verfügbar';
+      versionEl.classList.add('error');
+      buttonEl.textContent = 'Alle Releases ansehen';
+      buttonEl.href = 'https://github.com/8bamo/bamotv-downloads/releases';
+      buttonEl.removeAttribute('aria-disabled');
+      return;
+    }
+    versionEl.textContent = 'Version ' + version;
+    buttonEl.textContent = PLATFORMS[platform].label;
+    buttonEl.href = url;
+    buttonEl.removeAttribute('aria-disabled');
+  }
+
+  fetch('https://api.github.com/repos/8bamo/bamotv-downloads/releases')
+    .then(function (response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .then(function (releases) {
+      Object.keys(PLATFORMS).forEach(function (platform) {
+        var config = PLATFORMS[platform];
+        var best = null;
+        releases.forEach(function (release) {
+          if (release.tag_name.indexOf(config.prefix) !== 0) return;
+          var version = parseVersion(release.tag_name.slice(config.prefix.length));
+          if (!version) return;
+          if (!best || compareVersions(version, best.version) > 0) {
+            best = { version: version, release: release };
+          }
+        });
+        if (!best) { setCard(platform, null, null, true); return; }
+        var asset = (best.release.assets || []).filter(function (a) { return a.name === config.asset; })[0];
+        if (!asset) { setCard(platform, null, null, true); return; }
+        setCard(platform, best.version.join('.'), asset.browser_download_url, false);
+      });
+    })
+    .catch(function () {
+      Object.keys(PLATFORMS).forEach(function (platform) { setCard(platform, null, null, true); });
+    });
+})();
+</script>
+</body>
+</html>
